@@ -675,7 +675,7 @@ class CompactCalendarController {
     }
 
     void addEvents(List<Event> events) {
-       eventsContainer.addEvents(events);
+        eventsContainer.addEvents(events);
     }
 
     List<Event> getCalendarEventsFor(long epochMillis) {
@@ -691,11 +691,11 @@ class CompactCalendarController {
     }
 
     void removeEvent(Event event) {
-       eventsContainer.removeEvent(event);
+        eventsContainer.removeEvent(event);
     }
 
     void removeEvents(List<Event> events) {
-       eventsContainer.removeEvents(events);
+        eventsContainer.removeEvents(events);
     }
 
     void setGrowProgress(float grow) {
@@ -817,7 +817,7 @@ class CompactCalendarController {
                         if (!eventsList.isEmpty()) {
                             Event event = eventsList.get(0);
                             if (eventIndicatorStyle == FILL_BITMAP_INDICATOR)
-                                drawEventIndicatorBitmap(canvas, xPosition - paddingLeft, yPosition - paddingHeight, event.getBitmap());
+                                drawEventIndicatorBitmap(canvas, xPosition, yPosition, event.getBitmap());
                             else
                                 drawEventIndicatorCircle(canvas, xPosition, yPosition, event.getColor());
                         }
@@ -891,7 +891,7 @@ class CompactCalendarController {
         boolean isSameMonthAsToday = monthToDrawCalender.get(Calendar.MONTH) == todayCalender.get(Calendar.MONTH);
         boolean isSameYearAsToday = monthToDrawCalender.get(Calendar.YEAR) == todayCalender.get(Calendar.YEAR);
         boolean isSameMonthAsCurrentCalendar = monthToDrawCalender.get(Calendar.MONTH) == currentCalender.get(Calendar.MONTH) &&
-                                               monthToDrawCalender.get(Calendar.YEAR) == currentCalender.get(Calendar.YEAR);
+                monthToDrawCalender.get(Calendar.YEAR) == currentCalender.get(Calendar.YEAR);
         int todayDayOfMonth = todayCalender.get(Calendar.DAY_OF_MONTH);
         boolean isAnimatingWithExpose = animationStatus == EXPOSE_CALENDAR_ANIMATION;
 
@@ -997,7 +997,13 @@ class CompactCalendarController {
     }
 
     private void drawEventIndicatorBitmap(Canvas canvas, float x, float y, Bitmap bitmap) {
-        canvas.drawBitmap(bitmap, x, y, dayPaint);
+        float leftBorder = x - 0.5f * widthPerDay;
+        float topBorder = y - 0.5f * heightPerDay;
+        float rightBorder = leftBorder + widthPerDay;
+        float bottomBorder = topBorder + heightPerDay;
+
+        Rect dayRect = new Rect((int)leftBorder, (int)topBorder, (int)rightBorder, (int)bottomBorder);
+        canvas.drawBitmap(bitmap, null, dayRect, dayPaint);
     }
 
     private void drawEventIndicatorCircle(Canvas canvas, float x, float y, int color) {
