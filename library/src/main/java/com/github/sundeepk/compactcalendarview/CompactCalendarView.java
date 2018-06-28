@@ -436,8 +436,4 @@ public class CompactCalendarView extends View {
         return this.horizontalScrollEnabled;
     }
 
-
-    public void setStreak(){
-
-    }
 }

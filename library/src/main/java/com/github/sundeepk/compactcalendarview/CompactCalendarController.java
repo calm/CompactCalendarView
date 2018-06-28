@@ -51,7 +51,6 @@ class CompactCalendarController {
     private int monthsScrolledSoFar;
     private int heightPerDay;
     private int textSize = 30;
-    private int daysTextSize = 12;
     private int width;
     private int height;
     private int paddingRight;
@@ -154,13 +153,6 @@ class CompactCalendarController {
                 multiEventIndicatorColor = typedArray.getColor(R.styleable.CompactCalendarView_compactCalendarMultiEventIndicatorColor, multiEventIndicatorColor);
                 textSize = typedArray.getDimensionPixelSize(R.styleable.CompactCalendarView_compactCalendarTextSize,
                         (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, textSize, context.getResources().getDisplayMetrics()));
-
-                daysTextSize = typedArray.getDimensionPixelSize(R.styleable.CompactCalendarView_compactCalendarDaysTextSize,
-                        (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, daysTextSize, context.getResources().getDisplayMetrics()));
-
-
-
-
                 targetHeight = typedArray.getDimensionPixelSize(R.styleable.CompactCalendarView_compactCalendarTargetHeight,
                         (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, targetHeight, context.getResources().getDisplayMetrics()));
                 eventIndicatorStyle = typedArray.getInt(R.styleable.CompactCalendarView_compactCalendarEventIndicatorStyle, SMALL_INDICATOR);
@@ -924,12 +916,10 @@ class CompactCalendarController {
                     dayPaint.setTypeface(Typeface.DEFAULT_BOLD);
                     dayPaint.setStyle(Paint.Style.FILL);
                     dayPaint.setColor(calenderTextColor);
-                    dayPaint.setTextSize(daysTextSize);
                     canvas.drawText(dayColumnNames[colDirection], xPosition, paddingHeight, dayPaint);
                     dayPaint.setTypeface(Typeface.DEFAULT);
                 }
             } else {
-                dayPaint.setTextSize(textSize);
                 int day = ((dayRow - 1) * 7 + colDirection + 1) - firstDayOfMonth;
                 int defaultCalenderTextColorToUse = calenderTextColor;
                 if (currentCalender.get(Calendar.DAY_OF_MONTH) == day && isSameMonthAsCurrentCalendar && !isAnimatingWithExpose) {
