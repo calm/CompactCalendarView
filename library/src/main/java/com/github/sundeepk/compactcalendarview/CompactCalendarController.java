@@ -2,6 +2,7 @@ package com.github.sundeepk.compactcalendarview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -23,6 +24,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import static com.github.sundeepk.compactcalendarview.CompactCalendarView.CompactCalendarViewListener;
+import static com.github.sundeepk.compactcalendarview.CompactCalendarView.FILL_BITMAP_INDICATOR;
 import static com.github.sundeepk.compactcalendarview.CompactCalendarView.FILL_LARGE_INDICATOR;
 import static com.github.sundeepk.compactcalendarview.CompactCalendarView.NO_FILL_LARGE_INDICATOR;
 import static com.github.sundeepk.compactcalendarview.CompactCalendarView.SMALL_INDICATOR;
@@ -811,10 +813,13 @@ class CompactCalendarController {
                 boolean isCurrentSelectedDay = shouldDrawSelectedDayCircle && (selectedDayOfMonth == dayOfMonth);
 
                 if (shouldDrawIndicatorsBelowSelectedDays || (!shouldDrawIndicatorsBelowSelectedDays && !isSameDayAsCurrentDay && !isCurrentSelectedDay) || animationStatus == EXPOSE_CALENDAR_ANIMATION) {
-                    if (eventIndicatorStyle == FILL_LARGE_INDICATOR || eventIndicatorStyle == NO_FILL_LARGE_INDICATOR) {
+                    if (eventIndicatorStyle == FILL_LARGE_INDICATOR || eventIndicatorStyle == NO_FILL_LARGE_INDICATOR || eventIndicatorStyle == FILL_BITMAP_INDICATOR) {
                         if (!eventsList.isEmpty()) {
                             Event event = eventsList.get(0);
-                            drawEventIndicatorCircle(canvas, xPosition, yPosition, event.getColor());
+                            if (eventIndicatorStyle == FILL_BITMAP_INDICATOR)
+                                drawEventIndicatorBitmap(canvas, xPosition - paddingLeft, yPosition - paddingHeight, event.getBitmap());
+                            else
+                                drawEventIndicatorCircle(canvas, xPosition, yPosition, event.getColor());
                         }
                     } else {
                         yPosition += indicatorOffset;
@@ -989,6 +994,10 @@ class CompactCalendarController {
         } else {
             drawCircle(canvas, circleScale * bigCircleIndicatorRadius, x, y - (textHeight / 6));
         }
+    }
+
+    private void drawEventIndicatorBitmap(Canvas canvas, float x, float y, Bitmap bitmap) {
+        canvas.drawBitmap(bitmap, x, y, dayPaint);
     }
 
     private void drawEventIndicatorCircle(Canvas canvas, float x, float y, int color) {

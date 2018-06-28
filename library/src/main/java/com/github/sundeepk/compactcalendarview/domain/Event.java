@@ -1,5 +1,6 @@
 package com.github.sundeepk.compactcalendarview.domain;
 
+import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 
 public class Event {
@@ -7,6 +8,7 @@ public class Event {
     private int color;
     private long timeInMillis;
     private Object data;
+    private Bitmap bitmap;
 
     public Event(int color, long timeInMillis) {
         this.color = color;
@@ -19,12 +21,28 @@ public class Event {
         this.data = data;
     }
 
+    public Event(int color, long timeInMillis, Object data, Bitmap bitmap) {
+        this.color = color;
+        this.timeInMillis = timeInMillis;
+        this.data = data;
+        this.bitmap = bitmap;
+    }
+
     public int getColor() {
         return color;
     }
 
     public long getTimeInMillis() {
         return timeInMillis;
+    }
+
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
     }
 
     @Nullable
