@@ -84,6 +84,7 @@ class CompactCalendarController {
     private boolean displayOtherMonthDays = false;
     private boolean shouldSelectFirstDayOfMonthOnScroll = true;
     private boolean isRtl = false;
+    private boolean boldDaysOfWeek = true;
 
     private CompactCalendarViewListener listener;
     private VelocityTracker velocityTracker = null;
@@ -162,7 +163,7 @@ class CompactCalendarController {
                 daysTextSize = typedArray.getDimensionPixelSize(R.styleable.CompactCalendarView_compactCalendarDaysTextSize,
                         (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, daysTextSize, context.getResources().getDisplayMetrics()));
 
-
+                boldDaysOfWeek = typedArray.getBoolean(R.styleable.CompactCalendarView_compactCalendarBoldDaysText, boldDaysOfWeek);
                 targetHeight = typedArray.getDimensionPixelSize(R.styleable.CompactCalendarView_compactCalendarTargetHeight,
                         (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, targetHeight, context.getResources().getDisplayMetrics()));
                 eventIndicatorStyle = typedArray.getInt(R.styleable.CompactCalendarView_compactCalendarEventIndicatorStyle, SMALL_INDICATOR);
@@ -928,7 +929,8 @@ class CompactCalendarController {
                 // first row, so draw the first letter of the day
                 if (shouldDrawDaysHeader) {
                     dayPaint.setColor(calenderTextColor);
-                    dayPaint.setTypeface(Typeface.DEFAULT_BOLD);
+                    if (boldDaysOfWeek)
+                        dayPaint.setTypeface(Typeface.DEFAULT_BOLD);
                     dayPaint.setStyle(Paint.Style.FILL);
                     dayPaint.setColor(calenderTextColor);
                     dayPaint.setTextSize(daysTextSize);

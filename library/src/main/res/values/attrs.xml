@@ -16,6 +16,7 @@
     </attr>
     <declare-styleable name="CompactCalendarView">
         <attr name="compactCalendarDaysTextSize" format="dimension"/>
+        <attr name="compactCalendarBoldDaysText" format="boolean"/>
         <attr name="compactCalendarTextSize" format="dimension"/>
         <attr name="compactCalendarBackgroundColor" format="color"/>
         <attr name="compactCalendarCurrentDayBackgroundColor" format="color"/>
