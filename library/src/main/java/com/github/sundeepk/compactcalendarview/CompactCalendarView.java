@@ -26,7 +26,7 @@ public class CompactCalendarView extends View {
     public static final int FILL_LARGE_INDICATOR = 1;
     public static final int NO_FILL_LARGE_INDICATOR = 2;
     public static final int SMALL_INDICATOR = 3;
-    public static final int FILL_BITMAP_INDICATOR = 4;
+    public static final int FILL_HIGHLIGHT_INDICATOR = 4;
 
     private final AnimationHandler animationHandler;
     private CompactCalendarController compactCalendarController;

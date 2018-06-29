@@ -4,7 +4,7 @@
         <enum name="fill_large_indicator" value="1" />
         <enum name="no_fill_large_indicator" value="2" />
         <enum name="small_indicator" value="3" />
-        <enum name="bitmap_indicator" value="4" />
+        <enum name="fill_highlight_indicator" value="4" />
     </attr>
     <attr name="compactCalendarCurrentDayIndicatorStyle" format="enum">
         <enum name="fill_large_indicator" value="1" />

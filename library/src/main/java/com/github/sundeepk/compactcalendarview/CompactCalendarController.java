@@ -2,12 +2,14 @@ package com.github.sundeepk.compactcalendarview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -17,14 +19,14 @@ import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
 import android.widget.OverScroller;
 import com.github.sundeepk.compactcalendarview.domain.Event;
+import com.github.sundeepk.compactcalendarview.domain.Highlight;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-
 import static com.github.sundeepk.compactcalendarview.CompactCalendarView.CompactCalendarViewListener;
-import static com.github.sundeepk.compactcalendarview.CompactCalendarView.FILL_BITMAP_INDICATOR;
+import static com.github.sundeepk.compactcalendarview.CompactCalendarView.FILL_HIGHLIGHT_INDICATOR;
 import static com.github.sundeepk.compactcalendarview.CompactCalendarView.FILL_LARGE_INDICATOR;
 import static com.github.sundeepk.compactcalendarview.CompactCalendarView.NO_FILL_LARGE_INDICATOR;
 import static com.github.sundeepk.compactcalendarview.CompactCalendarView.SMALL_INDICATOR;
@@ -161,8 +163,6 @@ class CompactCalendarController {
                         (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, daysTextSize, context.getResources().getDisplayMetrics()));
 
 
-
-
                 targetHeight = typedArray.getDimensionPixelSize(R.styleable.CompactCalendarView_compactCalendarTargetHeight,
                         (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, targetHeight, context.getResources().getDisplayMetrics()));
                 eventIndicatorStyle = typedArray.getInt(R.styleable.CompactCalendarView_compactCalendarEventIndicatorStyle, SMALL_INDICATOR);
@@ -200,6 +200,7 @@ class CompactCalendarController {
         dayPaint.setTextSize(textSize);
         dayPaint.setColor(calenderTextColor);
         dayPaint.getTextBounds("31", 0, "31".length(), textSizeRect);
+        dayPaint.setAntiAlias(true);
         textHeight = textSizeRect.height() * 3;
         textWidth = textSizeRect.width() * 2;
 
@@ -367,7 +368,7 @@ class CompactCalendarController {
     private void scrollNext() {
         monthsScrolledSoFar = monthsScrolledSoFar - 1;
         accumulatedScrollOffset.x = monthsScrolledSoFar * width;
-        if(shouldSelectFirstDayOfMonthOnScroll){
+        if (shouldSelectFirstDayOfMonthOnScroll) {
             setCalenderToFirstDayOfMonth(calendarWithFirstDayOfMonth, currentCalender.getTime(), 0, 1);
             setCurrentDate(calendarWithFirstDayOfMonth.getTime());
         }
@@ -377,7 +378,7 @@ class CompactCalendarController {
     private void scrollPrev() {
         monthsScrolledSoFar = monthsScrolledSoFar + 1;
         accumulatedScrollOffset.x = monthsScrolledSoFar * width;
-        if(shouldSelectFirstDayOfMonthOnScroll){
+        if (shouldSelectFirstDayOfMonthOnScroll) {
             setCalenderToFirstDayOfMonth(calendarWithFirstDayOfMonth, currentCalender.getTime(), 0, -1);
             setCurrentDate(calendarWithFirstDayOfMonth.getTime());
         }
@@ -813,12 +814,13 @@ class CompactCalendarController {
                 boolean isCurrentSelectedDay = shouldDrawSelectedDayCircle && (selectedDayOfMonth == dayOfMonth);
 
                 if (shouldDrawIndicatorsBelowSelectedDays || (!shouldDrawIndicatorsBelowSelectedDays && !isSameDayAsCurrentDay && !isCurrentSelectedDay) || animationStatus == EXPOSE_CALENDAR_ANIMATION) {
-                    if (eventIndicatorStyle == FILL_LARGE_INDICATOR || eventIndicatorStyle == NO_FILL_LARGE_INDICATOR || eventIndicatorStyle == FILL_BITMAP_INDICATOR) {
+                    if (eventIndicatorStyle == FILL_LARGE_INDICATOR || eventIndicatorStyle == NO_FILL_LARGE_INDICATOR || eventIndicatorStyle == FILL_HIGHLIGHT_INDICATOR) {
                         if (!eventsList.isEmpty()) {
                             Event event = eventsList.get(0);
-                            if (eventIndicatorStyle == FILL_BITMAP_INDICATOR)
-                                drawEventIndicatorBitmap(canvas, xPosition, yPosition, event.getBitmap());
-                            else
+                            if (eventIndicatorStyle == FILL_HIGHLIGHT_INDICATOR) {
+                                drawEventIndicatorHightlight(canvas, xPosition, yPosition, event);
+                                drawEventIndicatorCircleGradient(canvas, xPosition, yPosition, event.getColor(), event.getHighlight().getStartGradientColor(), event.getHighlight().getEndGradientColor());
+                            } else
                                 drawEventIndicatorCircle(canvas, xPosition, yPosition, event.getColor());
                         }
                     } else {
@@ -968,8 +970,26 @@ class CompactCalendarController {
         }
     }
 
+    private void drawDayCircleIndicatorGradient(int indicatorStyle, Canvas canvas, float x, float y, int color, int startColor, int endColor) {
+        drawDayCircleIndicatorGradient(indicatorStyle, canvas, x, y, color, 0.8f, startColor, endColor);
+    }
+
+    private void drawDayCircleIndicatorGradient(int indicatorStyle, Canvas canvas, float x, float y, int color, float circleScale, int startColor, int endColor) {
+        float strokeWidth = dayPaint.getStrokeWidth();
+        if (indicatorStyle == NO_FILL_LARGE_INDICATOR) {
+            dayPaint.setStrokeWidth(2 * screenDensity);
+            dayPaint.setStyle(Paint.Style.STROKE);
+        } else {
+            dayPaint.setStyle(Paint.Style.FILL);
+        }
+        drawCircleGradient(canvas, x, y, color, circleScale, startColor, endColor);
+        dayPaint.setStrokeWidth(strokeWidth);
+        dayPaint.setStyle(Paint.Style.FILL);
+    }
+
+
     private void drawDayCircleIndicator(int indicatorStyle, Canvas canvas, float x, float y, int color) {
-        drawDayCircleIndicator(indicatorStyle, canvas, x, y, color, 1);
+        drawDayCircleIndicator(indicatorStyle, canvas, x, y, color, 0.8f);
     }
 
     private void drawDayCircleIndicator(int indicatorStyle, Canvas canvas, float x, float y, int color, float circleScale) {
@@ -996,14 +1016,82 @@ class CompactCalendarController {
         }
     }
 
-    private void drawEventIndicatorBitmap(Canvas canvas, float x, float y, Bitmap bitmap) {
-        float leftBorder = x - 0.5f * widthPerDay;
-        float topBorder = y - 0.5f * heightPerDay;
-        float rightBorder = leftBorder + widthPerDay;
-        float bottomBorder = topBorder + heightPerDay;
 
-        Rect dayRect = new Rect((int)leftBorder, (int)topBorder, (int)rightBorder, (int)bottomBorder);
-        canvas.drawBitmap(bitmap, null, dayRect, dayPaint);
+    private void drawCircleGradient(Canvas canvas, float x, float y, int color, float circleScale, int startColor, int endColor) {
+        dayPaint.setColor(color);
+        if (animationStatus == ANIMATE_INDICATORS) {
+            float maxRadius = circleScale * bigCircleIndicatorRadius * 1.4f;
+            drawCircleGradient(canvas, growfactorIndicator > maxRadius ? maxRadius : growfactorIndicator, x, y - (textHeight / 6), startColor, endColor);
+        } else {
+            drawCircleGradient(canvas, circleScale * bigCircleIndicatorRadius, x, y - (textHeight / 6), startColor, endColor);
+        }
+    }
+
+
+    private void drawStreakEdge(Canvas canvas, float x, float y, int color, float circleScale, Highlight.Mode mode) {
+        dayPaint.setColor(color);
+        if (animationStatus == ANIMATE_INDICATORS) {
+            float maxRadius = circleScale * bigCircleIndicatorRadius * 1.4f;
+            drawStreakEdge(canvas, growfactorIndicator > maxRadius ? maxRadius : growfactorIndicator, x, y - (textHeight / 6), mode);
+        } else {
+            drawStreakEdge(canvas, circleScale * bigCircleIndicatorRadius, x, y - (textHeight / 6), mode);
+        }
+    }
+
+    private void drawEventIndicatorHightlight(Canvas canvas, float x, float y, Event event) {
+        if (event == null)
+            return;
+        if (event.getHighlight() == null)
+            return;
+
+        final int color = event.getHighlight().getColor();
+
+        Paint indicatorPaint = new Paint();
+        indicatorPaint.setAntiAlias(true);
+        indicatorPaint.setColor(color);
+
+        int leftBorder = (int) (x - 0.5 * widthPerDay);
+        int rightBorder = leftBorder + widthPerDay;
+
+        final int topBorder = (int) (y - (textHeight / 6) + bigCircleIndicatorRadius);
+        final int bottomBorder = (int) (y - (textHeight / 6) - bigCircleIndicatorRadius);
+        int dayOfTheWeek = getDayOfWeek(eventsCalendar);
+
+        if (event.getHighlight().getMode() == Highlight.Mode.Start) {
+            if (dayOfTheWeek != 6) {
+                Rect startRect = new Rect((int) x, topBorder, rightBorder, bottomBorder);
+                canvas.drawRect(startRect, indicatorPaint);
+            } else
+                drawStreakEdge(canvas, x, y, color, 1.0f, Highlight.Mode.End);
+
+            drawStreakEdge(canvas, x, y, color, 1.0f, Highlight.Mode.Start);
+        }
+
+        if (event.getHighlight().getMode() == Highlight.Mode.End) {
+            if (dayOfTheWeek == 0) {
+                drawStreakEdge(canvas, x, y, color, 1.0f, Highlight.Mode.Start);
+                drawStreakEdge(canvas, x, y, color, 1.0f, Highlight.Mode.End);
+            } else {
+                Rect endRect = new Rect(leftBorder, topBorder, (int) x, bottomBorder);
+                canvas.drawRect(endRect, indicatorPaint);
+                drawStreakEdge(canvas, x, y, color, 1.0f, Highlight.Mode.End);
+            }
+        }
+
+        if (event.getHighlight().getMode() == Highlight.Mode.Middle) {
+            if (dayOfTheWeek == 6) {
+                Rect startRect = new Rect(leftBorder, topBorder, (int) x, bottomBorder);
+                canvas.drawRect(startRect, indicatorPaint);
+                drawStreakEdge(canvas, x, y, color, 1.0f, Highlight.Mode.End);
+            } else if (dayOfTheWeek == 0){
+                Rect startRect = new Rect((int) x, topBorder, rightBorder, bottomBorder);
+                canvas.drawRect(startRect, indicatorPaint);
+                drawStreakEdge(canvas, x, y, color, 1.0f, Highlight.Mode.Start);
+            } else {
+                Rect middleRect = new Rect(leftBorder, topBorder, rightBorder, bottomBorder);
+                canvas.drawRect(middleRect, indicatorPaint);
+            }
+        }
     }
 
     private void drawEventIndicatorCircle(Canvas canvas, float x, float y, int color) {
@@ -1016,10 +1104,44 @@ class CompactCalendarController {
             drawDayCircleIndicator(NO_FILL_LARGE_INDICATOR, canvas, x, y, color);
         } else if (eventIndicatorStyle == FILL_LARGE_INDICATOR) {
             drawDayCircleIndicator(FILL_LARGE_INDICATOR, canvas, x, y, color);
+        }  else if (eventIndicatorStyle == FILL_HIGHLIGHT_INDICATOR) {
+            drawDayCircleIndicator(FILL_HIGHLIGHT_INDICATOR, canvas, x, y, color);
         }
     }
 
     private void drawCircle(Canvas canvas, float radius, float x, float y) {
         canvas.drawCircle(x, y, radius, dayPaint);
+    }
+
+    private void drawEventIndicatorCircleGradient(Canvas canvas, float x, float y, int color, int startColor, int endColor) {
+        dayPaint.setColor(color);
+        if (eventIndicatorStyle == SMALL_INDICATOR) {
+            dayPaint.setStyle(Paint.Style.FILL);
+            drawCircleGradient(canvas, smallIndicatorRadius, x, y, startColor, startColor);
+        } else if (eventIndicatorStyle == NO_FILL_LARGE_INDICATOR) {
+            dayPaint.setStyle(Paint.Style.STROKE);
+            drawDayCircleIndicatorGradient(NO_FILL_LARGE_INDICATOR, canvas, x, y, color, startColor, endColor);
+        } else if (eventIndicatorStyle == FILL_LARGE_INDICATOR) {
+            drawDayCircleIndicatorGradient(FILL_LARGE_INDICATOR, canvas, x, y, color, startColor, endColor);
+        } else if (eventIndicatorStyle == FILL_HIGHLIGHT_INDICATOR) {
+            drawDayCircleIndicatorGradient(FILL_HIGHLIGHT_INDICATOR, canvas, x, y, color, startColor, endColor);
+        }
+    }
+
+    private void drawCircleGradient(Canvas canvas, float radius, float x, float y, int startColor, int endColor) {
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setShader(new LinearGradient(x - radius, y - radius, x + radius, y + radius, startColor, endColor, Shader.TileMode.CLAMP));
+        canvas.drawCircle(x, y, radius, paint);
+    }
+
+    private void drawStreakEdge(Canvas canvas, float radius, float x, float y, Highlight.Mode mode) {
+        RectF rectf = new RectF(x - radius, y - radius, x + radius, y + radius);
+        Paint paint = new Paint();
+        paint.setColor(dayPaint.getColor());
+        paint.setAntiAlias(true);
+        int startAngle = Highlight.Mode.Start == mode ? -90 : 90;
+        int sweepAngle = -180;
+        canvas.drawArc(rectf, startAngle, sweepAngle, true, paint);
     }
 }
