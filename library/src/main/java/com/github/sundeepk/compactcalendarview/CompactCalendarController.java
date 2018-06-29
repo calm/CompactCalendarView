@@ -1057,6 +1057,12 @@ class CompactCalendarController {
         final int bottomBorder = (int) (y - (textHeight / 6) - bigCircleIndicatorRadius);
         int dayOfTheWeek = getDayOfWeek(eventsCalendar);
 
+
+        if (event.getHighlight().getMode() == Highlight.Mode.Single) {
+            drawStreakEdge(canvas, x, y, color, 1.0f, Highlight.Mode.Start);
+            drawStreakEdge(canvas, x, y, color, 1.0f, Highlight.Mode.End);
+        }
+
         if (event.getHighlight().getMode() == Highlight.Mode.Start) {
             if (dayOfTheWeek != 6) {
                 Rect startRect = new Rect((int) x, topBorder, rightBorder, bottomBorder);

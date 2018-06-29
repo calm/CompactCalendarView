@@ -2,7 +2,7 @@ package com.github.sundeepk.compactcalendarview.domain;
 
 public class Highlight {
 
-   public enum Mode {Start, End, Middle}
+   public enum Mode {Start, End, Middle, Single}
 
     private int color;
     private float radius;
