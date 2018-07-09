@@ -5,14 +5,12 @@ public class Highlight {
    public enum Mode {Start, End, Middle, Single}
 
     private int color;
-    private float radius;
     private Mode mode;
     private int startGradientColor;
     private int endGradientColor;
 
-    public Highlight(int color, float radius, Mode mode, int startGradientColor, int endGradientColor) {
+    public Highlight(int color, Mode mode, int startGradientColor, int endGradientColor) {
         this.color = color;
-        this.radius = radius;
         this.mode = mode;
         this.startGradientColor = startGradientColor;
         this.endGradientColor = endGradientColor;
@@ -24,14 +22,6 @@ public class Highlight {
 
     public void setColor(int color) {
         this.color = color;
-    }
-
-    public float getRadius() {
-        return radius;
-    }
-
-    public void setRadius(float radius) {
-        this.radius = radius;
     }
 
     public Mode getMode() {
