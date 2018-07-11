@@ -18,13 +18,16 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
 import android.widget.OverScroller;
+
 import com.github.sundeepk.compactcalendarview.domain.Event;
 import com.github.sundeepk.compactcalendarview.domain.Highlight;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+
 import static com.github.sundeepk.compactcalendarview.CompactCalendarView.CompactCalendarViewListener;
 import static com.github.sundeepk.compactcalendarview.CompactCalendarView.FILL_HIGHLIGHT_INDICATOR;
 import static com.github.sundeepk.compactcalendarview.CompactCalendarView.FILL_LARGE_INDICATOR;
@@ -821,7 +824,7 @@ class CompactCalendarController {
                         if (!eventsList.isEmpty()) {
                             Event event = eventsList.get(0);
                             if (eventIndicatorStyle == FILL_HIGHLIGHT_INDICATOR) {
-                                drawEventIndicatorHightlight(canvas, xPosition, yPosition, event);
+                                drawEventIndicatorHighlight(canvas, xPosition, yPosition, event);
                                 drawEventIndicatorCircleGradient(canvas, xPosition, yPosition, event.getColor(), event.getHighlight().getStartGradientColor(), event.getHighlight().getEndGradientColor());
                             } else
                                 drawEventIndicatorCircle(canvas, xPosition, yPosition, event.getColor());
@@ -1046,7 +1049,7 @@ class CompactCalendarController {
         }
     }
 
-    private void drawEventIndicatorHightlight(Canvas canvas, float x, float y, Event event) {
+    private void drawEventIndicatorHighlight(Canvas canvas, float x, float y, Event event) {
         if (event == null)
             return;
         if (event.getHighlight() == null)
@@ -1059,6 +1062,8 @@ class CompactCalendarController {
         indicatorPaint.setColor(color);
 
         int leftBorder = (int) (x - 0.5 * widthPerDay);
+        if(leftBorder % widthPerDay != 0)
+            leftBorder += 1;
         int rightBorder = leftBorder + widthPerDay;
 
         final int topBorder = (int) (y - (textHeight / 6) + bigCircleIndicatorRadius);
