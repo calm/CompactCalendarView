@@ -3,6 +3,7 @@ package com.github.sundeepk.compactcalendarview;
 import com.github.sundeepk.compactcalendarview.comparators.EventComparator;
 import com.github.sundeepk.compactcalendarview.domain.Event;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -10,6 +11,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class EventsContainer {
@@ -78,6 +80,20 @@ public class EventsContainer {
         }
         Collections.sort(allEventsForMonth, eventsComparator);
         return allEventsForMonth;
+    }
+
+
+    List<String> getDaysOfEventsInMonth(int month, int year){
+        final List<Events> eventsForMonthAndYear = getEventsForMonthAndYear(month, year);
+        List<String> daysOfEvents = new ArrayList<>();
+        if(eventsForMonthAndYear != null && eventsForMonthAndYear.size() > 0) {
+            for(Events events : eventsForMonthAndYear){
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d", Locale.getDefault());
+                final String format = simpleDateFormat.format(events.getTimeInMillis());
+                daysOfEvents.add(format);
+            }
+        }
+        return daysOfEvents;
     }
 
     private Events getEventDayEvent(long eventTimeInMillis){

@@ -112,6 +112,7 @@ class CompactCalendarController {
     private int currentSelectedDayTextColor;
     private int calenderBackgroundColor = Color.WHITE;
     private int otherMonthDaysTextColor;
+    private int streakTextColor;
     private TimeZone timeZone;
 
     /**
@@ -155,6 +156,7 @@ class CompactCalendarController {
                 otherMonthDaysTextColor = typedArray.getColor(R.styleable.CompactCalendarView_compactCalendarOtherMonthDaysTextColor, otherMonthDaysTextColor);
                 currentSelectedDayBackgroundColor = typedArray.getColor(R.styleable.CompactCalendarView_compactCalendarCurrentSelectedDayBackgroundColor, currentSelectedDayBackgroundColor);
                 currentSelectedDayTextColor = typedArray.getColor(R.styleable.CompactCalendarView_compactCalendarCurrentSelectedDayTextColor, calenderTextColor);
+                streakTextColor = typedArray.getColor(R.styleable.CompactCalendarView_compactCalendarStreakTextColor, streakTextColor);
                 calenderBackgroundColor = typedArray.getColor(R.styleable.CompactCalendarView_compactCalendarBackgroundColor, calenderBackgroundColor);
                 multiEventIndicatorColor = typedArray.getColor(R.styleable.CompactCalendarView_compactCalendarMultiEventIndicatorColor, multiEventIndicatorColor);
                 textSize = typedArray.getDimensionPixelSize(R.styleable.CompactCalendarView_compactCalendarTextSize,
@@ -887,6 +889,7 @@ class CompactCalendarController {
 
     void drawMonth(Canvas canvas, Calendar monthToDrawCalender, int offset) {
         drawEvents(canvas, monthToDrawCalender, offset);
+        List<String> daysWithStreak = eventsContainer.getDaysOfEventsInMonth(monthToDrawCalender.get(Calendar.MONTH), monthToDrawCalender.get(Calendar.YEAR));
 
         //offset by one because we want to start from Monday
         int firstDayOfMonth = getDayOfWeek(monthToDrawCalender);
@@ -966,7 +969,11 @@ class CompactCalendarController {
                 } else {
                     dayPaint.setStyle(Paint.Style.FILL);
                     dayPaint.setColor(defaultCalenderTextColorToUse);
+                    int currentTextColor = dayPaint.getColor();
+                    if(daysWithStreak != null && daysWithStreak.size() > 0 && daysWithStreak.contains(String.valueOf(day)))
+                        dayPaint.setColor(streakTextColor);
                     canvas.drawText(String.valueOf(day), xPosition, yPosition, dayPaint);
+                    dayPaint.setColor(currentTextColor);
                     dayPaint.setColor(defaultCalenderTextColorToUse);
                 }
             }
