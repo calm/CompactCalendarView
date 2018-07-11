@@ -969,11 +969,9 @@ class CompactCalendarController {
                 } else {
                     dayPaint.setStyle(Paint.Style.FILL);
                     dayPaint.setColor(defaultCalenderTextColorToUse);
-                    int currentTextColor = dayPaint.getColor();
-                    if(daysWithStreak != null && daysWithStreak.size() > 0 && daysWithStreak.contains(String.valueOf(day)))
+                    if (daysWithStreak != null && daysWithStreak.size() > 0 && daysWithStreak.contains(String.valueOf(day)))
                         dayPaint.setColor(streakTextColor);
                     canvas.drawText(String.valueOf(day), xPosition, yPosition, dayPaint);
-                    dayPaint.setColor(currentTextColor);
                     dayPaint.setColor(defaultCalenderTextColorToUse);
                 }
             }
