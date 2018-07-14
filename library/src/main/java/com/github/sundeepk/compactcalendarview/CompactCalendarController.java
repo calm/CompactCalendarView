@@ -1065,6 +1065,8 @@ class CompactCalendarController {
         if(leftBorder % widthPerDay != 0)
             leftBorder += 1;
         int rightBorder = leftBorder + widthPerDay;
+        if(leftBorder < 0)
+            rightBorder -= 1;
 
         final int topBorder = (int) (y - (textHeight / 6) + bigCircleIndicatorRadius);
         final int bottomBorder = (int) (y - (textHeight / 6) - bigCircleIndicatorRadius);
