@@ -1068,9 +1068,15 @@ class CompactCalendarController {
         if(leftBorder < 0)
             rightBorder -= 1;
 
-        final int topBorder = (int) (y - (textHeight / 6) + bigCircleIndicatorRadius);
-        final int bottomBorder = (int) (y - (textHeight / 6) - bigCircleIndicatorRadius);
+        int topBorder = (int) (y - (textHeight / 6) + bigCircleIndicatorRadius);
+        int bottomBorder = (int) (y - (textHeight / 6) - bigCircleIndicatorRadius);
         int dayOfTheWeek = getDayOfWeek(eventsCalendar);
+
+        if(bottomBorder < topBorder) {
+            int temp = bottomBorder;
+            bottomBorder = topBorder;
+            topBorder = temp;
+        }
 
 
         if (event.getHighlight().getMode() == Highlight.Mode.Single) {
