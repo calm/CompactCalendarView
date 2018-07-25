@@ -88,6 +88,7 @@ class CompactCalendarController {
     private boolean shouldSelectFirstDayOfMonthOnScroll = true;
     private boolean isRtl = false;
     private boolean boldDaysOfWeek = true;
+    private boolean disableDayClickEvents = false;
 
     private CompactCalendarViewListener listener;
     private VelocityTracker velocityTracker = null;
@@ -176,6 +177,7 @@ class CompactCalendarController {
                 currentSelectedDayIndicatorStyle = typedArray.getInt(R.styleable.CompactCalendarView_compactCalendarCurrentSelectedDayIndicatorStyle, FILL_LARGE_INDICATOR);
                 displayOtherMonthDays = typedArray.getBoolean(R.styleable.CompactCalendarView_compactCalendarDisplayOtherMonthDays, displayOtherMonthDays);
                 shouldSelectFirstDayOfMonthOnScroll = typedArray.getBoolean(R.styleable.CompactCalendarView_compactCalendarShouldSelectFirstDayOfMonthOnScroll, shouldSelectFirstDayOfMonthOnScroll);
+                disableDayClickEvents = typedArray.getBoolean(R.styleable.CompactCalendarView_compactCalendarDisableDayClickEvents, disableDayClickEvents);
             } finally {
                 typedArray.recycle();
             }
@@ -485,7 +487,7 @@ class CompactCalendarController {
 
     void onSingleTapUp(MotionEvent e) {
         // Don't handle single tap when calendar is scrolling and is not stationary
-        if (isScrolling()) {
+        if (isScrolling() || disableDayClickEvents) {
             return;
         }
 
@@ -948,7 +950,10 @@ class CompactCalendarController {
                 int day = ((dayRow - 1) * 7 + colDirection + 1) - firstDayOfMonth;
                 int defaultCalenderTextColorToUse = calenderTextColor;
                 if (currentCalender.get(Calendar.DAY_OF_MONTH) == day && isSameMonthAsCurrentCalendar && !isAnimatingWithExpose) {
-                    drawDayCircleIndicator(currentSelectedDayIndicatorStyle, canvas, xPosition, yPosition, currentSelectedDayBackgroundColor);
+                    if (daysWithStreak != null && daysWithStreak.size() > 0 && daysWithStreak.contains(String.valueOf(day)))
+                        drawDayCircleIndicator(currentSelectedDayIndicatorStyle, canvas, xPosition, yPosition, Color.TRANSPARENT);
+                    else
+                        drawDayCircleIndicator(currentSelectedDayIndicatorStyle, canvas, xPosition, yPosition, currentSelectedDayBackgroundColor);
                     defaultCalenderTextColorToUse = currentSelectedDayTextColor;
                 } else if (isSameYearAsToday && isSameMonthAsToday && todayDayOfMonth == day && !isAnimatingWithExpose) {
                     // TODO calculate position of circle in a more reliable way
