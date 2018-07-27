@@ -894,7 +894,7 @@ class CompactCalendarController {
 
     void drawMonth(Canvas canvas, Calendar monthToDrawCalender, int offset) {
         drawEvents(canvas, monthToDrawCalender, offset);
-        List<String> daysWithStreak = eventsContainer.getDaysOfEventsInMonth(monthToDrawCalender.get(Calendar.MONTH), monthToDrawCalender.get(Calendar.YEAR), TimeZone.getTimeZone("UTC"));
+        List<String> daysWithStreak = eventsContainer.getDaysOfEventsInMonth(monthToDrawCalender.get(Calendar.MONTH), monthToDrawCalender.get(Calendar.YEAR), TimeZone.getDefault());
 
         //offset by one because we want to start from Monday
         int firstDayOfMonth = getDayOfWeek(monthToDrawCalender);
