@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 public class EventsContainer {
 
@@ -90,20 +89,6 @@ public class EventsContainer {
         if(eventsForMonthAndYear != null && eventsForMonthAndYear.size() > 0) {
             for(Events events : eventsForMonthAndYear){
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d", Locale.getDefault());
-                final String format = simpleDateFormat.format(events.getTimeInMillis());
-                daysOfEvents.add(format);
-            }
-        }
-        return daysOfEvents;
-    }
-
-    List<String> getDaysOfEventsInMonth(int month, int year, TimeZone timeZone){
-        final List<Events> eventsForMonthAndYear = getEventsForMonthAndYear(month, year);
-        List<String> daysOfEvents = new ArrayList<>();
-        if(eventsForMonthAndYear != null && eventsForMonthAndYear.size() > 0) {
-            for(Events events : eventsForMonthAndYear){
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d", Locale.getDefault());
-                simpleDateFormat.setTimeZone(timeZone);
                 final String format = simpleDateFormat.format(events.getTimeInMillis());
                 daysOfEvents.add(format);
             }
