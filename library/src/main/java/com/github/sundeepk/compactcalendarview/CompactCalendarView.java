@@ -28,10 +28,11 @@ public class CompactCalendarView extends View {
     public static final int SMALL_INDICATOR = 3;
     public static final int FILL_HIGHLIGHT_INDICATOR = 4;
 
+    float downXValue = 0, downYValue = 0;
     private final AnimationHandler animationHandler;
     private CompactCalendarController compactCalendarController;
     private GestureDetectorCompat gestureDetector;
-    private boolean horizontalScrollEnabled = true;
+    private boolean horizontalScrollEnabled = false;
 
     public interface CompactCalendarViewListener {
         public void onDayClick(Date dateClicked);
@@ -368,8 +369,11 @@ public class CompactCalendarView extends View {
      * is set to false. If in rtl mode, it will show the previous month.
      */
     public void scrollRight(){
-        compactCalendarController.scrollRight();
-        invalidate();
+        horizontalScrollEnabled = !DateUtils.onCurrentMonth(compactCalendarController.getFirstDayOfCurrentMonth());
+        if(horizontalScrollEnabled) {
+            compactCalendarController.scrollRight();
+            invalidate();
+        }
     }
 
     /**
@@ -409,12 +413,22 @@ public class CompactCalendarView extends View {
         }
     }
 
-    public void shouldScrollMonth(boolean enableHorizontalScroll){
-        this.horizontalScrollEnabled = enableHorizontalScroll;
-    }
-
     public boolean onTouchEvent(MotionEvent event) {
-        if (horizontalScrollEnabled) {
+        final boolean currentMonth = DateUtils.onCurrentMonth(compactCalendarController.getFirstDayOfCurrentMonth());
+        horizontalScrollEnabled = true;
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN: {
+                horizontalScrollEnabled = !currentMonth;
+                downXValue = event.getX();
+                downYValue = event.getY();
+                break;
+            }
+            case MotionEvent.ACTION_MOVE:
+                if(downXValue > event.getX() && currentMonth)
+                    horizontalScrollEnabled = false;
+                break;
+        }
+        if(horizontalScrollEnabled) {
             compactCalendarController.onTouch(event);
             invalidate();
         }
