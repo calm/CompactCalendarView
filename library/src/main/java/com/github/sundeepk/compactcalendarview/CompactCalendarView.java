@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -22,6 +23,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class CompactCalendarView extends View {
+
+    public static final String TAG =  CompactCalendarView.class.getSimpleName();
 
     public static final int FILL_LARGE_INDICATOR = 1;
     public static final int NO_FILL_LARGE_INDICATOR = 2;
@@ -369,6 +372,7 @@ public class CompactCalendarView extends View {
      * is set to false. If in rtl mode, it will show the previous month.
      */
     public void scrollRight(){
+        Log.d(TAG, "scrollRight: ");
         horizontalScrollEnabled = !DateUtils.onCurrentMonth(compactCalendarController.getFirstDayOfCurrentMonth());
         if(horizontalScrollEnabled) {
             compactCalendarController.scrollRight();
@@ -429,6 +433,7 @@ public class CompactCalendarView extends View {
                 break;
         }
         if(horizontalScrollEnabled) {
+            Log.d(TAG, "onTouchEvent: horizontalScrollEnabled " + horizontalScrollEnabled);
             compactCalendarController.onTouch(event);
             invalidate();
         }
