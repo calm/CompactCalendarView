@@ -89,6 +89,7 @@ public class EventsContainer {
         if(eventsForMonthAndYear != null && eventsForMonthAndYear.size() > 0) {
             for(Events events : eventsForMonthAndYear){
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d", Locale.getDefault());
+                simpleDateFormat.setTimeZone(eventsCalendar.getTimeZone());
                 final String format = simpleDateFormat.format(events.getTimeInMillis());
                 daysOfEvents.add(format);
             }
